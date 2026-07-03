@@ -1,0 +1,8 @@
+﻿﻿namespace Dsw2026Ej15.Domain.Entities;
+
+public abstract class BaseEntity
+{
+    public Guid Id { get; init; } = Guid.NewGuid();
+
+    protected BaseEntity() { }
+}

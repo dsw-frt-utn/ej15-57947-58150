@@ -1,44 +1,42 @@
+using System.Text.Json;
 using Dsw2026Ej15.Domain.Exceptions;
-using Microsoft.AspNetCore.Mvc;
 
-namespace Dsw2026Ej15.Api.Middlewares
+namespace Dsw2026EJ15.Api.Middleware;
+
+public class ExceptionHandlingMiddleware
 {
-    public class ExceptionMiddleware
+    private readonly RequestDelegate _next;
+
+    public ExceptionHandlingMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public ExceptionMiddleware(RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context)
+    {
+        try
         {
-            _next = next;
+            await _next(context);
         }
-
-        public async Task InvokeAsync(HttpContext context)
+        catch (ValidationException ex)
         {
-            try
-            {
-                await _next(context);
-            }
-            catch (ValidationException ex)
-            {
-                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Response.ContentType = "application/json";
+            var body = JsonSerializer.Serialize(new {message = ex.Message});
+            await context.Response.WriteAsync(body);
+        }
+        catch (Exception)
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/problem+json";
 
-                await context.Response.WriteAsJsonAsync(new
-                {
-                    error = ex.Message
-                });
-            }
-            catch (Exception)
+            var body = JsonSerializer.Serialize( new
             {
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-
-                var problem = new ProblemDetails
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Title = "Ocurrió un error interno en el servidor."
-                };
-
-                await context.Response.WriteAsJsonAsync(problem);
-            }
+                title = "Internal Server Error",
+                status = 500,
+                message = "Ocurrio un error interno en el servidor."
+            });
+            await context.Response.WriteAsync(body);
         }
     }
 }
