@@ -1,4 +1,4 @@
-using Dsw2026EJ15.Api.DTOs;
+using Dsw2026Ej15.Api.DTOs;
 using Dsw2026Ej15.Domain.Entities;
 using Dsw2026Ej15.Domain.Exceptions;
 using Dsw2026Ej15.Domain.Interfaces;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026EJ15.Api.Controllers;
 [ApiController]
-[Route("api/[doctors]")]
+[Route("api/doctors")]
 
 public class DoctorsController : ControllerBase
 {

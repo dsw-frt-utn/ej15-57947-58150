@@ -1,4 +1,4 @@
-namespace Dsw2026EJ15.Api.DTOs;
+namespace Dsw2026Ej15.Api.DTOs;
 
 public class CreateDoctorRequest
 {
